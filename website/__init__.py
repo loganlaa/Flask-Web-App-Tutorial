@@ -2,6 +2,10 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from os import path
 from flask_login import LoginManager
+import os
+from flask_wtf.csrf import CSRFProtect
+
+csrf = CSRFProtect()
 
 db = SQLAlchemy()
 DB_NAME = "database.db"
@@ -9,9 +13,10 @@ DB_NAME = "database.db"
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'hjshjhdjah kjshkjdhjs'
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or 'fallback_secret_key'
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
     db.init_app(app)
+    csrf.init_app(app)
 
     from .views import views
     from .auth import auth
